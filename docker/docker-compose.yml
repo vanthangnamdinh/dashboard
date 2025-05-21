@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  click_house_server:
+    env_file:
+      - ./.env
+    image: yandex/clickhouse-server
+    ports:
+      - "${CLICK_HOUSE_PORT}:${CLICK_HOUSE_PORT}"
+      - "${CLICK_HOUSE_HTTP_PORT}:${CLICK_HOUSE_HTTP_PORT}"
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 262144
+        hard: 262144
+
+volumes:
+  mysqldb:
