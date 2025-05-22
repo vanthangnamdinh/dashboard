@@ -12,12 +12,18 @@ class WidgetData(BaseModel):
     end_user_id: str = Field(..., description="Id of End User")
     widget_id: str = Field(..., description="Id of Widget")
     parent_message_id: str = Field(..., description="Id of Parent Message")
+    conversation_id: str = Field(..., description="Id of Conversation")
     width: int = Field(..., description="Width of Widget")
     height: int = Field(..., description="Height of Widget")
     x: int = Field(..., description="X position of Widget")
     y: int = Field(..., description="Y position of Widget")
     created_at: datetime = Field(..., description="Creation time of Widget")
 
+class GetDashboard(BaseModel):
+    dashboard_id: str = Field(..., description="Id of Dashboard")
+
+class GetDashboardList(BaseModel):
+    conversation_id: str = Field(..., description="Id of Conversation")
 
 class CreateNewWidget(BaseModel):
     dashboard_id: str = Field(..., description="Id of Dashboard")
@@ -27,6 +33,7 @@ class CreateNewWidget(BaseModel):
     height: int = Field(..., description="Height of Widget")
     x: int = Field(..., description="X position of Widget")
     y: int = Field(..., description="Y position of Widget")
+    messageId: str = Field(..., description="Id of Message")
 
 
 class UpdateWidget(BaseModel):
