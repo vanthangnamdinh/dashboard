@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 
 from app.container import Container
 from app.statistic_log.adapter.input.api import router as statistic_router
+from app.dashboard.adapter.input.api import router as dashboard_router
 from core.config import config
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
@@ -20,6 +21,7 @@ from core.helpers.cache import Cache, CustomKeyMaker
 def init_routers(app_: FastAPI) -> None:
     container = Container()
     app_.include_router(statistic_router)
+    app_.include_router(dashboard_router)
 
 
 def init_listeners(app_: FastAPI) -> None:

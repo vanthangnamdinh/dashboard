@@ -25,11 +25,12 @@
 ### Apply alembic revision
 ```shell
 > alembic upgrade head
+> alembic revision --autogenerate -m "{migration_message}"
 ```
 
 ### Run server
 ```shell
-> python3 main.py --env local|dev|prod --debug
+> python main.py --env local|dev|prod --debug
 ```
 
 ### Run test codes
