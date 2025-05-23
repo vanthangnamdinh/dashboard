@@ -1,6 +1,11 @@
 # Sử dụng image Python 3.11.7 chính thức
 FROM python:3.11.7-slim
 
+# Thiết lập các biến môi trường proxy
+ENV HTTP_PROXY= 
+
+ENV HTTPS_PROXY=
+
 # Thiết lập thư mục làm việc trong container
 WORKDIR /app
 
@@ -21,41 +26,14 @@ RUN . /app/venv/bin/activate && \
     pip install --upgrade pip setuptools && \
     pip install poetry && \
     poetry config virtualenvs.create false && \
-    poetry install && \
-    alembic upgrade head
+    poetry install 
 
-# Lệnh khởi động container
-CMD ["/app/venv/bin/python", "main.py", "--env", "prod", "--debug"]
-
-
-FROM python:3.11-slim
-
-# Thit lập các biên môi trường proxy
-
-ENV HTTP_PROXY=http://10.255.249.100:3128
-
-ENV HTTPS_PROXY=http://10.255.249.100:3128
-
-# Thit lập thư mục làm việc trong container
-
-WORKDIR /app
-
-# Sao chép file requirements.txt vào container
-
-COPY requirements.txt
-
-# Cài đặt các thư viện từ requirements.txt qua proxy
-
-RUN pip install --no-cache-dir -r requirements.txt
-
-ENV HTTP PROXY=
+# xóa proxy sau khi cài đặt
+ENV HTTP_PROXY= 
 
 ENV HTTPS_PROXY=
 
-# Sao chép toàn bộ mã nguũn vào container
+# Lệnh khởi động container
+#CMD ["/app/venv/bin/python", "main.py", "--env", "prod", "--debug"] #Không chạy app bởi vì cần chạy migrate
 
-COPY
 
-# Lệnh chạy ứng dụng (có thì thay đi tuỳ vào ứng dụng của bạn)
-
-CMD ["python", "main.py"]

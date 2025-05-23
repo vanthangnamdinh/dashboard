@@ -3,4 +3,5 @@ services:
   chatbot_dashboard_api:
     image: chatbot_dashboard_api:latest
     ports:
-      - "8002:8000"
+      - "8002:8000" # replace if port 8002 is already in use
+    command: tail -f /dev/null
