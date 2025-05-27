@@ -220,18 +220,7 @@ class DashboardOutput(DashboardRepo):
                     session.add(dashboard)
                 widget = await session.get(Widget, data.widget_id)
                 if not widget:
-                    print("Creating new widget")
                     logger.info(f"Creating new widget with ID {data.widget_id}")
-                    print(
-                        {
-                            "id": data.widget_id,
-                            "dashboard_id": data.dashboard_id,
-                            "width": data.width,
-                            "height": data.height,
-                            "x": data.x,
-                            "y": data.y,
-                        }
-                    )
                     widget = Widget(
                         id=data.widget_id,
                         dashboard_id=data.dashboard_id,
@@ -260,6 +249,7 @@ class DashboardOutput(DashboardRepo):
                     "height": widget.height,
                     "x": widget.x,
                     "y": widget.y,
+                    "updated_at": dashboard.updated_at,
                 }
 
             except SQLAlchemyError as e:
@@ -306,7 +296,15 @@ class DashboardOutput(DashboardRepo):
                         )
                     await session.commit()
                     await session.refresh(widget)
-                    return widget
+                    return {
+                        "widget_id": widget.id,
+                        "dashboard_id": widget.dashboard_id,
+                        "width": widget.width,
+                        "height": widget.height,
+                        "x": widget.x,
+                        "y": widget.y,
+                        "updated_at": dashboard.updated_at if dashboard else None,
+                    }
                 else:
                     logger.error(f"Widget with ID {data.widget_id} not found.")
                     raise HTTPException(
@@ -354,7 +352,12 @@ class DashboardOutput(DashboardRepo):
                         session.add(dashboard)
 
                     await session.commit()
-                    return {"message": "Widget deleted successfully"}
+                    return {
+                        "widget_id": widget.id,
+                        "dashboard_id": widget.dashboard_id,
+                        "is_deleted": widget.is_deleted,
+                        "deleted_at": widget.deleted_at,
+                    }
                 else:
                     logger.error(f"Widget with ID {widget_id} not found.")
                     raise HTTPException(

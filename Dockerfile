@@ -1,39 +1,37 @@
-# Sử dụng image Python 3.11.7 chính thức
+#Using official Python 3.11.7 image
 FROM python:3.11.7-slim
 
-# Thiết lập các biến môi trường proxy
-ENV HTTP_PROXY= 
+# Ip address of the host machine
+ENV HTTP_PROXY=    
 
-ENV HTTPS_PROXY=
+# Ip address of the host machine
+ENV HTTPS_PROXY=    
 
-# Thiết lập thư mục làm việc trong container
+# Ip address of the host machine
+ENV http_proxy=    
+
+# Set working directory in container
 WORKDIR /app
-
-# Sao chép toàn bộ project hiện tại vào thư mục /app trong image
+# Copy the entire current project to the /app folder in the image
 COPY . /app
-
-# Cài đặt các gói cần thiết để tạo virtual environment và biên dịch poetry
+# Install the necessary packages to create a virtual environment and compile poetry
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
     && rm -rf /var/lib/apt/lists/*
-
-# Tạo virtual environment trong thư mục /app/venv
+# Create virtual environment in /app/venv directory
 RUN python -m venv /app/venv
 
-# Kích hoạt venv và cài pip, setuptools, poetry, sau đó cài đặt dependencies và chạy alembic
+# Activate venv and install pip, setuptools, poetry, then install dependencies and run alembic
+
 RUN . /app/venv/bin/activate && \
     pip install --upgrade pip setuptools && \
     pip install poetry && \
     poetry config virtualenvs.create false && \
-    poetry install 
+    poetry install
 
-# xóa proxy sau khi cài đặt
-ENV HTTP_PROXY= 
+ENV HTTP_PROXY=
 
 ENV HTTPS_PROXY=
 
-# Lệnh khởi động container
-#CMD ["/app/venv/bin/python", "main.py", "--env", "prod", "--debug"] #Không chạy app bởi vì cần chạy migrate
-
-
+ENV http_proxy=

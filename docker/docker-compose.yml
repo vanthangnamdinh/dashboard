@@ -3,5 +3,12 @@ services:
   chatbot_dashboard_api:
     image: chatbot_dashboard_api:latest
     ports:
-      - "8002:8000" # replace if port 8002 is already in use
+      - "8002:8000"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES HOST=   # This is the host where the Postgres database is running
+      - POSTGRES PORT=5433
+      - POSTGRES_DB=dashboard
+      - POSTGRES_URL= # This is the URL for the Postgres database
     command: tail -f /dev/null
