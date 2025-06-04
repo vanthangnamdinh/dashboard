@@ -60,7 +60,9 @@ class DashboardOutput(DashboardRepo):
     async def update_dashboard_name(self, *, dashboard_id, data) -> dict:
         async with async_session() as session:
             try:
-                stmt = select(Dashboard).where(Dashboard.id == dashboard_id)
+                stmt = select(Dashboard).where(
+                    (Dashboard.id == dashboard_id) & (Dashboard.isDeleted == False)
+                )
                 result = await session.execute(stmt)
                 dashboard = result.scalar_one_or_none()
 
@@ -98,18 +100,21 @@ class DashboardOutput(DashboardRepo):
         async with async_session() as session:
             try:
                 stmt = select(Dashboard).where(
-                    Dashboard.conversation_id == data.conversation_id,
+                    (Dashboard.conversation_id == data.conversation_id)
+                    & (Dashboard.isDeleted == False)
                 )
                 result = await session.execute(stmt)
                 dashboards = result.scalars().all()
 
                 for dashboard in dashboards:
                     stmt_widgets = select(Widget).where(
-                        Widget.dashboard_id == dashboard.id
+                        (Widget.dashboard_id == dashboard.id)
+                        & (Widget.isDeleted == False)
                     )
                     widget_result = await session.execute(stmt_widgets)
                     widgets = widget_result.scalars().all()
                     dashboard.count_widget = len(widgets)
+
 
                 return {
                     "dashboards": [
@@ -117,6 +122,8 @@ class DashboardOutput(DashboardRepo):
                             "dashboard_id": dashboard.id,
                             "dashboard_name": dashboard.name,
                             "count_widget": dashboard.count_widget,
+                            "parent_message_id": dashboard.parent_message_id,
+                            "created_at": dashboard.created_at,
                             "updated_at": dashboard.updated_at,
                         }
                         for dashboard in dashboards
@@ -136,14 +143,17 @@ class DashboardOutput(DashboardRepo):
     async def get_dashboard(self, *, data) -> dict:
         async with async_session() as session:
             try:
-                stmt = select(Dashboard).where(Dashboard.id == data.dashboard_id)
+                stmt = select(Dashboard).where(
+                    (Dashboard.id == data.dashboard_id) & (Dashboard.isDeleted == False)
+                )
                 result = await session.execute(stmt)
                 dashboard = result.scalar_one_or_none()
                 if not dashboard:
                     logger.error(f"Dashboard with ID {data.dashboard_id} not found.")
                     return {"error": "Dashboard not found"}
-                await session.commit()
-                stmt_widgets = select(Widget).where(Widget.dashboard_id == dashboard.id)
+                stmt_widgets = select(Widget).where(
+                    (Widget.dashboard_id == dashboard.id) & (Widget.isDeleted == False)
+                )
                 widget_result = await session.execute(stmt_widgets)
                 widgets = widget_result.scalars().all()
                 dashboard_data = {
@@ -155,10 +165,10 @@ class DashboardOutput(DashboardRepo):
                 # Fetch messages for each widget
                 for widget in widgets:
                     stmt_messages = select(Message).where(
-                        Message.widget_id == widget.id
+                        (Message.widget_id == widget.id) & (Message.isDeleted == False)
                     )
                     message_result = await session.execute(stmt_messages)
-                    messages = message_result.scalars().all()
+                    messages = message_result.unique().scalars().all()
                     dashboard_data["widgets"].append(
                         {
                             "widget_id": widget.id,
@@ -275,7 +285,9 @@ class DashboardOutput(DashboardRepo):
     async def update_widget(self, *, data) -> dict:
         async with async_session() as session:
             try:
-                stmt = select(Widget).where(Widget.id == data.widget_id)
+                stmt = select(Widget).where(
+                    (Widget.id == data.widget_id) & (Widget.isDeleted == False)
+                )
                 result = await session.execute(stmt)
                 widget = result.scalar_one_or_none()
 
@@ -338,12 +350,14 @@ class DashboardOutput(DashboardRepo):
     async def delete_widget(self, *, widget_id) -> dict:
         async with async_session() as session:
             try:
-                stmt = select(Widget).where(Widget.id == widget_id)
+                stmt = select(Widget).where(
+                    (Widget.id == widget_id) & (Widget.isDeleted == False)
+                )
                 result = await session.execute(stmt)
                 widget = result.scalar_one_or_none()
 
                 if widget:
-                    widget.is_deleted = True
+                    widget.isDeleted = True
                     widget.deleted_at = datetime.now()
                     session.add(widget)
                     dashboard = await session.get(Dashboard, widget.dashboard_id)
@@ -355,8 +369,9 @@ class DashboardOutput(DashboardRepo):
                     return {
                         "widget_id": widget.id,
                         "dashboard_id": widget.dashboard_id,
-                        "is_deleted": widget.is_deleted,
+                        "isDeleted": widget.isDeleted,
                         "deleted_at": widget.deleted_at,
+                        "updated_at": dashboard.updated_at if dashboard else None,
                     }
                 else:
                     logger.error(f"Widget with ID {widget_id} not found.")
