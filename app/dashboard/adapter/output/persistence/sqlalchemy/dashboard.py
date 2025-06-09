@@ -225,7 +225,6 @@ class DashboardOutput(DashboardRepo):
                         end_user_id=data.end_user_id,
                         conversation_id=data.conversation_id,
                         parent_message_id=data.parent_message_id,
-                        created_at=data.created_at,
                     )
                     session.add(dashboard)
                 widget = await session.get(Widget, data.widget_id)
