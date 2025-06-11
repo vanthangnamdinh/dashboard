@@ -11,12 +11,24 @@
 
 ## Run
 
-### Launch docker
+### Launch docker create database
 ```shell
-> docker-compose -f docker/docker-compose.yml up
+> cd docker
+> docker-compose -f docker-compose-dashboard.yml up -d
 ```
 
-### Install dependency
+### Build image backend
+```shell
+> docker build -t chatbot_dashboard_api .
+```
+
+### Launch docker 
+```shell
+> cd docker
+> docker-compose --env-file ../.env -f docker-compose.yml up -d
+```
+
+### Install dependency (if not use docker)
 ```shell
 > poetry shell
 > poetry install
@@ -25,20 +37,20 @@
 ### Apply alembic revision
 ```shell
 > alembic upgrade head
-> alembic revision --autogenerate -m "{migration_message}"
+> alembic revision --autogenerate -m "{migration_message}" # only change DB schema
 ```
 
-### Run server
+### Run server (only dev)
 ```shell
 > python main.py --env local|dev|prod --debug
 ```
 
-### Run test codes
+### Run test codes (only dev)
 ```shell
 > make test
 ```
 
-### Make coverage report
+### Make coverage report (only dev)
 ```shell
 > make cov
 ```

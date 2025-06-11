@@ -5,10 +5,9 @@ services:
     ports:
       - "8002:8000"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES HOST=   # This is the host where the Postgres database is running
-      - POSTGRES PORT=5433
-      - POSTGRES_DB=dashboard
-      - POSTGRES_URL= # This is the URL for the Postgres database
-    command: tail -f /dev/null
+      POSTGRES_USER: ${POSTGRES_USER:-postgres} # Default user is postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres} # Default password is postgres
+      POSTGRES_HOST: ${POSTGRES_HOST:-localhost} # Default host is localhost
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432} # Default port is 5433
+      POSTGRES_DB: ${POSTGRES_DB:-dashboard} # Default database is dashboard
+      POSTGRES_URL: postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@${POSTGRES_HOST:-localhost}:${POSTGRES_PORT:-5432}/{POSTGRES_DB:-dashboard} # This is the URL for the Postgres database
