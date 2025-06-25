@@ -11,6 +11,11 @@ class Config(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     SENTRY_SDN: str = ""
 
+    # JWT RS256 config
+    JWT_ISSUER: str = os.getenv("JWT_ISSUER", "your_issuer")
+    JWT_AUDIENCE: str = os.getenv("JWT_AUDIENCE", "your_audience")
+    JWT_PUBLIC_KEY_URL: str = os.getenv("JWT_PUBLIC_KEY_URL", "https://your-domain/.well-known/jwks.json")
+
     POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "localhost")
     POSTGRES_PORT: int = int(os.getenv("POSTGRES_PORT", 5432))
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "dashboard")
