@@ -1,14 +1,15 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import os
 from pydantic_settings import BaseSettings
-import os
 
 class Config(BaseSettings):
     ENV: str = "development"
     DEBUG: bool = True
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
-    JWT_SECRET_KEY: str = "fastapi"
-    JWT_ALGORITHM: str = "HS256"
+    JWT_ALGORITHM: str = "RSA256"
     SENTRY_SDN: str = ""
 
     # JWT RS256 config

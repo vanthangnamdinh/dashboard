@@ -1,8 +1,10 @@
-class UserRepository:
-    async def decode_jwt(self, token: str) -> dict:
-        """Decode JWT RS256 lấy thông tin user"""
-        raise NotImplementedError
+from abc import ABC, abstractmethod
+from typing import Dict
 
-    async def save_user(self, user_info: dict) -> bool:
-        """Lưu user vào DB, trả về True nếu là user mới"""
-        raise NotImplementedError 
+
+class UserRepo(ABC):
+    @abstractmethod
+    async def verify_token(self, *, data) -> dict:
+        """Save user"""
+
+    
