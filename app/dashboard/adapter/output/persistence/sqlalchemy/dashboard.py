@@ -218,7 +218,7 @@ class DashboardOutput(DashboardRepo):
         async with async_session() as session:
             try:
                 dashboard = await session.get(Dashboard, data.dashboard_id)
-                if not dashboard and data.created_at:
+                if not dashboard:
                     dashboard = Dashboard(
                         id=data.dashboard_id,
                         name=data.dashboard_name,
